@@ -14,6 +14,7 @@ import fs from 'fs'
 import { hashPassword, comparePasswords } from "../middlewares/PasswordManager.js";
 import { getGoodTime } from '../utilities/simpleCodes.js';
 import { response } from 'express';
+import { request } from 'http';
 
 
 //GETS AN ARRAY OF ALL USERS
@@ -55,6 +56,29 @@ export const getUserByEmail = async (request, response) => {
     return response.status(500).json({ message: 'An error occurred while processing your request' });
   }
 };
+
+export const getUserByUsername = async (request, response) => {
+  const username = request.query.username
+
+  console.log(username);
+  
+  try {
+    
+    if (!username) return response.status(409).json({ message: 'Username is required' })
+
+    const userExists = await User.findOne({ userName: username })
+
+    if (userExists) {
+      return response.status(200).json({ message: 'user found', user: userExists })
+    } else {
+      return response.json({ message: 'User doesnt exist' })
+    }
+
+  } catch (error) {
+    return response.status(500).json({ message: 'An error occured' })
+  }
+
+}
 
 
 export const sendAccountCreationOtp = async (request, response) => {
@@ -138,7 +162,7 @@ export const verifyAccountCreationOtp = async (request, response) => {
     return response.status(404).json({ message: 'Invalid OTP' })
   }
   
-
 }
+
 
 

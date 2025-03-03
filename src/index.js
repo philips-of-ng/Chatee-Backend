@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url'
 import path from 'path'
 
 import userRoutes from './routes/UserRoutes.js'
+import fileRoutes from './routes/fileUploadRoutes.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,6 +40,8 @@ app.use(express.urlencoded({ extended: true }))
 
 //PATHS SHOULD BE HERE
 app.use('/api/users', userRoutes)
+app.use('/api/files', fileRoutes)
+
 
 //Connect to DB and start server
 mongoose.connect(mongoURL).then(() => console.log('MongoDB Connected')).catch((error) => console.log('Error nonnecting to database', error))
