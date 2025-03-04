@@ -1,49 +1,46 @@
-import express from 'express'
-import multer from 'multer'
 import { v2 as cloudinary } from 'cloudinary';
-import fs from 'fs';
+import dotenv from 'dotenv';
+import streamifier from 'streamifier'; // Required to convert Buffer to Readable Stream
 
-import dotenv from 'dotenv'
+dotenv.config();
 
-dotenv.config()
-
-cloudinary.config({
+const cloudinaryOptions = {
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
-})
+};
 
-
-//UPLOAD DISPLAY PICTURE WHILE SIGNING IN
+cloudinary.config(cloudinaryOptions);
 
 export const uploadDisplayPicture = async (request, response) => {
+  console.log('Upload request received:', request.body);
 
   try {
     if (!request.file) {
-      return response.status(500).json({ error: 'No file uploaded' })
+      return response.status(400).json({ error: 'No file uploaded' });
     }
 
-    // Upload the image to Cloudinary
-    const uploadResult = await cloudinary.uploader.upload_stream(
-      { folder: 'chatee-user-dps' },
-      (error, result) => {
-        if (error) {
-          return response.status(500).json({ error: 'Error uploading file to Cloudinary' })
-        }
+    // Convert the buffer into a readable stream
+    const uploadStream = () => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'chatee-user-dps' },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+        streamifier.createReadStream(request.file.buffer).pipe(stream);
+      });
+    };
 
-        response.json({ imageUrl: result.secure_url })
-        console.log('Result of the upload', result);
-        
-      }
-    )
+    const result = await uploadStream();
 
-    // Pass the file buffer to the Cloudinary stream upload
-    uploadResult.end(request.file.buffer)
+    response.json({ imageUrl: result.secure_url });
+    console.log('Upload successful:', result);
 
   } catch (error) {
-    response.status(500).send(error.message)
+    console.error('Upload error:', error);
+    response.status(500).json({ error: error.message });
   }
-}
-
-
-
+};

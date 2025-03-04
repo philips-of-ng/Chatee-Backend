@@ -26,8 +26,8 @@ app.use(cors(corsOption))
 
 //ENVIRONMENTAL VARIABLES
 const mongoURL = process.env.MONGO_URI
-const PORT = process.env.PORT || '3000'
-const HOST = process.env.HOST || '0.0.0.0'
+const PORT = process.env.PORT 
+const HOST = process.env.HOST 
 
 console.log(`Enviromental Variables`, { mongoURL, PORT, HOST });
 
