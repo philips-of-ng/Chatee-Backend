@@ -1,5 +1,5 @@
 import express from 'express'
-import { getUsers, getUserByEmail, sendAccountCreationOtp, verifyAccountCreationOtp, getUserByUsername } from '../controllers/UserController.js'
+import { getUsers, getUserByEmail, sendAccountCreationOtp, verifyAccountCreationOtp, getUserByUsername, createAccount } from '../controllers/UserController.js'
 
 const router = express.Router()
 
@@ -8,6 +8,7 @@ router.get('/get-user-by-email', getUserByEmail)
 router.post('/cru-otp', sendAccountCreationOtp)
 router.post('/vcru-otp', verifyAccountCreationOtp)
 router.get('/get-user-by-username', getUserByUsername)
+router.post('/create-user', createAccount)
 
 // router.post('/reset-password', resetPassword)
 // router.patch('/change-password/:email', changePassword_ResetMode)

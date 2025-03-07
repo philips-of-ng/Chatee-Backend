@@ -165,4 +165,31 @@ export const verifyAccountCreationOtp = async (request, response) => {
 }
 
 
+export const createAccount = async (request, response) => {
+
+  const { email, password, username } = request.body
+  const newUser = request.body
+
+  console.log('This is the user credentials', {
+    email, password, username
+  });
+
+  try {
+    const userExists = await User.findOne({ email: email })
+
+    if (userExists) {
+      return response.status(409).json({ message: 'User with this email already exists' })
+    }
+
+    const userValidated = userSchema.validate(newUser)
+    console.log('User validated', userValidated);
+    
+    const userCreated = await User.create()
+
+  } catch (error) {
+    console.log('error creating user', error);
+    
+  }
+}
+
 
