@@ -7,7 +7,7 @@ const userSchema = Joi.object({
   userName: Joi.string().required(),
   email: Joi.string().required(),
   password: Joi.string().required(),
-  displayPicture: Joi.string()
+  displayPicture: Joi.string().allow('', null)
 })
 
 export default userSchema

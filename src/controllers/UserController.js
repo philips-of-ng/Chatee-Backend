@@ -167,29 +167,66 @@ export const verifyAccountCreationOtp = async (request, response) => {
 
 export const createAccount = async (request, response) => {
 
-  const { email, password, username } = request.body
-  const newUser = request.body
-
+  const { email, password, userName } = request.body
+  
   console.log('This is the user credentials', {
-    email, password, username
+    email, password, userName
   });
 
   try {
+    //checking if user exists
     const userExists = await User.findOne({ email: email })
-
     if (userExists) {
       return response.status(409).json({ message: 'User with this email already exists' })
     }
 
-    const userValidated = userSchema.validate(newUser)
-    console.log('User validated', userValidated);
-    
-    const userCreated = await User.create()
+    //hash password and create user object
+    const hashedPassword = await hashPassword(password)
+    const newUser = new User({
+      email: email,
+      password: hashedPassword,
+      userName: userName
+    })
 
+    //save user
+    const userCreated = await newUser.save()
+    console.log('User created', userCreated);
+
+    response.status(201).json({ message: 'User Created Successfully' })
+        
   } catch (error) {
     console.log('error creating user', error);
-    
   }
+}
+
+
+export const loginAccount = async (request, response) => {
+
+  const { email, password } = request.body
+  console.log('Login request received', request.body);
+  
+  try {
+    const userDetails = await User.findOne({ email: email })
+    if (!userDetails) {
+      return response.status(404).json({ message: 'user not found' })
+    }
+    console.log('I got the user', userDetails);
+
+    const passwordCorrect = comparePasswords(password, userDetails.password)
+
+    if (!passwordCorrect) {
+      return response.status(401).json({ message: 'incorrect password' })
+    } else {
+      return response.status(200).json({ message: 'Access Granted', userInfo: userDetails })
+    }
+
+    
+    // const comparePasswords = comparePasswords(password, )
+
+  } catch (error) {
+    console.log('error logging in', error);
+  }
+
 }
 
 
