@@ -176,6 +176,8 @@ export const createAccount = async (request, response) => {
   try {
     //checking if user exists
     const userExists = await User.findOne({ email: email })
+    console.log('User exists', userExists);
+    
     if (userExists) {
       return response.status(409).json({ message: 'User with this email already exists' })
     }
@@ -200,33 +202,30 @@ export const createAccount = async (request, response) => {
 }
 
 
+
+
 export const loginAccount = async (request, response) => {
+  const { email, password } = request.body;
+  console.log("Login request received", request.body);
 
-  const { email, password } = request.body
-  console.log('Login request received', request.body);
-  
   try {
-    const userDetails = await User.findOne({ email: email })
+    const userDetails = await User.findOne({ email: email });
     if (!userDetails) {
-      return response.status(404).json({ message: 'user not found' })
+      return response.status(404).json({ message: "user not found" });
     }
-    console.log('I got the user', userDetails);
+    console.log("I got the user", userDetails);
 
-    const passwordCorrect = comparePasswords(password, userDetails.password)
+    const passwordCorrect = await comparePasswords(password, userDetails.password); // FIXED
 
     if (!passwordCorrect) {
-      return response.status(401).json({ message: 'incorrect password' })
+      return response.status(401).json({ message: "incorrect password" });
     } else {
-      return response.status(200).json({ message: 'Access Granted', userInfo: userDetails })
+      return response.status(200).json({ message: "Access Granted", userInfo: userDetails });
     }
-
-    
-    // const comparePasswords = comparePasswords(password, )
-
   } catch (error) {
-    console.log('error logging in', error);
+    console.log("error logging in", error);
   }
+};
 
-}
 
 

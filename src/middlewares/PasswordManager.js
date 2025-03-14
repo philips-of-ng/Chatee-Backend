@@ -11,7 +11,17 @@ export const hashPassword = async (plainPassword) => {
 }
 
 export const comparePasswords = async (plainPassword, storeHashedPassword) => {
+
+  if (!plainPassword || !storeHashedPassword) {
+    console.log('No password provided');
+    return false
+  }
+
   try {
+
+    console.log('Stored hashed pw i got', storeHashedPassword);
+    
+
     const isCorrect = await argon2.verify(storeHashedPassword, plainPassword)
     if (isCorrect) {
       console.log('Password Matches.');
@@ -22,6 +32,5 @@ export const comparePasswords = async (plainPassword, storeHashedPassword) => {
     }
   } catch (error) {
       console.log('Error verifying password:', error);
-      throw error
   }
 }
