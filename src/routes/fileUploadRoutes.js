@@ -6,7 +6,7 @@ const router = express.Router()
 
 // Use memory storage if you're uploading to Cloudinary directly
 const storage = multer.memoryStorage()
-const upload = multer({ storage }).single('image')  // Assuming the field name is 'file'
+const upload = multer({ storage }).single('image')  // Assuming the field name is 'image'
 
 router.post('/upload', upload, uploadDisplayPicture)
 
